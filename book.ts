@@ -133,11 +133,13 @@ type ReadonlyBase<T> = {
 }
 type ReadonlyDeep<T> = {
   readonly [K in keyof T]: 
-    T[K] extends object 
+  T[K] extends any 
+    ? T[K] extends object 
       ? T[K] extends Function 
         ? T[K]
         : ReadonlyDeep<T[K]>
       : T[K]
+    : never
 }
 type CaiXuKunA = ReadonlyBase<CaiXuKun>
 type CaiXuKunB = ReadonlyDeep<CaiXuKun>
