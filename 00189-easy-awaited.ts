@@ -18,6 +18,11 @@ type cases = [
 // @ts-expect-error
 type error = MyAwaited<number>
 
-
+// TODO: PromiseLike 是个什么东西
 // ============= Your Code Here =============
-type MyAwaited<T> = any
+type MyAwaited<T extends PromiseLike<any>> = T extends PromiseLike<infer R> 
+  ? R extends PromiseLike<unknown>
+    ? MyAwaited<R>
+    : R
+  : never
+

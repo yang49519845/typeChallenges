@@ -17,8 +17,6 @@ type error = TupleToObject<[[1, 2], {}]>
 // ============= Your Code Here =============
 // [infer TupleItem, ...infer OtherTupleItem] 
 // type TupleToObject<T extends readonly unknown[]> = {}
-type TupleToObject<T extends readonly unknown[]> = T extends [infer TupleItem, ...infer OtherTupleItem] 
-  ? { [Key in keyof TupleItem ]: TupleItem } & TupleToObject<OtherTupleItem>
-  : {}
+type TupleToObject<T extends readonly (string | number | symbol)[]> =  { [K in T[number]]: K }
 
   type TTC = TupleToObject<typeof tuple>
