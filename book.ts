@@ -127,20 +127,31 @@ type StringValueResultA = StringToUnionPlus<StringValue>;
 type StringReverse<S extends string, Result extends string> = S extends `${infer First}${infer Rest}` ? StringReverse<Rest, `${First}${Result}`> : Result
 type StringReverseResult = StringReverse<StringValue, ''>
 
-type CaiXuKun = { name: string, age: number, child: { group: string, child: { currend: number } }}
+type CaiXuKunInfo = { name: string, age: number, child: { group: string, child: { currend: number } }}
 type ReadonlyBase<T> = {
   readonly [K in keyof T]: T[K]
 }
 type ReadonlyDeep<T> = {
   readonly [K in keyof T]: 
-  T[K] extends any 
-    ? T[K] extends object 
+    T[K] extends object 
       ? T[K] extends Function 
         ? T[K]
         : ReadonlyDeep<T[K]>
       : T[K]
-    : never
 }
-type CaiXuKunA = ReadonlyBase<CaiXuKun>
-type CaiXuKunB = ReadonlyDeep<CaiXuKun>
+type ReadonlyDeepPlus<T extends Record<string, any>> = 
+  T extends any
+    ? {
+      readonly [K in keyof T]: 
+        T[K] extends object 
+          ? T[K] extends Function 
+            ? T[K]
+            : ReadonlyDeepPlus<T[K]>
+          : T[K]
+    }
+    : never
+
+type CaiXuKunA = ReadonlyBase<CaiXuKunInfo>
+type CaiXuKunB = ReadonlyDeep<CaiXuKunInfo>
 type CaiXuKunC = CaiXuKunA['child']['child'];
+type CaiXuKunD = ReadonlyDeepPlus<CaiXuKunInfo>
