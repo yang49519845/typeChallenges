@@ -202,3 +202,25 @@ type GreaterThan<
       : Result['length'] extends NumA
         ? false
         : GreaterThan<NumA, NumB, [...Result, unknown]>
+type GreaterThanResult = GreaterThan<3, 4>
+type GreaterThanResultA = GreaterThan<4, 3>
+
+type A = Readonly<Record<string, string>>
+
+/**
+ * Fibonacci
+ * 
+ * Fibonacci 数列是 1、1、2、3、5、8、13、21、34、…… 这样的数列，有当前的数是前两个数的和的规律。
+ * F(0) = 1，F(1) = 1, F(n) = F(n - 1) + F(n - 2)（n ≥ 2，n ∈ N*）
+ * 
+ */
+type Fibonacci<
+  P extends unknown[],
+  C extends unknown[],
+  I extends unknown[] = [],
+  N extends number = 1
+> = I['length'] extends N
+  ? C['length']
+  : Fibonacci<C, [...P, ...C], [...I, unknown], N>
+type FibonacciFindIndex<N extends number> = Fibonacci<[1], [], [], N>;
+type FibonacciResult = FibonacciFindIndex<1>
