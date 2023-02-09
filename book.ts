@@ -1,4 +1,3 @@
-
 type GetParams<Func extends Function> = Func extends (...args: infer Args) => unknown ? Args : never;
 type ParamsResult = GetParams<(name: string, age: number) => string>
 type GetParamsThis<T> = T extends (this: infer ThisType, ...args: any[]) => any ? ThisType : unknown;
@@ -172,7 +171,7 @@ type Mutiply<
   NumA extends number,
   NumB extends number,
   Result extends unknown[] = []
-> = NumB extends 0 
+> = NumB extends 0
   ? Result['length']
   : Mutiply<NumA, Subtract<NumB, 1>, [...BuildArrAdd<NumA>, ...Result]>
 type MutiplyResult = Mutiply<9, 9>
@@ -187,8 +186,8 @@ type DivdeResult = Divide<81, 9>
 
 type StrLength<T extends string, R extends unknown[] = []> =
   T extends `${infer First}${infer Rest}`
-    ? StrLength<Rest, [...R, unknown]>
-    : R['length']
+  ? StrLength<Rest, [...R, unknown]>
+  : R['length']
 type StrLengthResult = StrLength<'hello miao'>
 type GreaterThan<
   NumA extends number,
@@ -196,12 +195,12 @@ type GreaterThan<
   Result extends unknown[] = []
 > =
   NumA extends NumB
-    ? false
-    : Result['length'] extends NumB
-      ? true
-      : Result['length'] extends NumA
-        ? false
-        : GreaterThan<NumA, NumB, [...Result, unknown]>
+  ? false
+  : Result['length'] extends NumB
+  ? true
+  : Result['length'] extends NumA
+  ? false
+  : GreaterThan<NumA, NumB, [...Result, unknown]>
 type GreaterThanResult = GreaterThan<3, 4>
 type GreaterThanResultA = GreaterThan<4, 3>
 
@@ -224,3 +223,162 @@ type Fibonacci<
   : Fibonacci<C, [...P, ...C], [...I, unknown], N>
 type FibonacciFindIndex<N extends number> = Fibonacci<[1], [], [], N>;
 type FibonacciResult = FibonacciFindIndex<1>
+
+type Union = '🐱' | '🐶' | '🐷' | 'a'
+type UpperCaseUnion<I extends string> = I extends 'a' ? Uppercase<I> : I
+type UpperCaseUnionResult = UpperCaseUnion<Union>
+type StrUnion = `${Union}要吃饭`
+
+/**
+ * Camelcase 
+ * 我们实现过，就是提取字符串中的字符，首字母大写以后重新构造一个新的。
+ */
+type Camelcase<S extends string> =
+  S extends `${infer L}_${infer R}${infer Rest}`
+  ? `${L}${Uppercase<R>}${Camelcase<Rest>}`
+  : S
+type CamelcaseArr<Arr extends unknown[]> =
+  Arr extends [infer I, ...infer R]
+  ? [Camelcase<I & string>, ...CamelcaseArr<R>]
+  : []
+type ArrDemo = ['spider_man', 'iron_man', 'flash_man']
+type UnionDemo = 'spider_man' | 'iron_man' | 'flash_man';
+type CamelcaseResult = Camelcase<ArrDemo[0]>
+type CamelcaseArrResult = CamelcaseArr<ArrDemo>
+type CamelcaseUnion<I extends string> =
+  I extends `${infer L}_${infer R}${infer Rest}`
+  ? `${L}${Uppercase<R>}${Camelcase<Rest>}`
+  : I
+type CamelcaseUnionResult = CamelcaseUnion<UnionDemo>
+
+/**
+ * 判断联合类型
+ */
+type IsUnion<A, B = A> =
+  A extends A
+  ? [B] extends [A]
+  ? false
+  : true
+  : never
+type IsUnionResult = IsUnion<UnionDemo>
+
+/**
+ * BEM
+ * 
+ * bem 是 css 命名规范，用 block__element--modifier 的形式来描述某个区块下面的某个元素的某个状态的样式。
+ */
+type BEM<
+  B extends string,
+  E extends string[],
+  M extends string[]
+> = `${B}__${E[number]}--${M[number]}`
+type bemResult = BEM<'guang', ['aaa', 'bbb'], ['warning', 'success']>;
+
+type Combination<A extends string, B extends string> =
+  | A
+  | B
+  | `${A}${B}`
+  | `${B}${A}`
+type AllCombinations<A extends string, B extends string = A> =
+  A extends A
+  ? Combination<A, AllCombinations<Exclude<B, A>>>
+  : never
+type CombinationResult = Combination<ArrDemo[0], ArrDemo[1]>
+type AllCombinationsResult = AllCombinations<UnionDemo>
+type AllCombinationsResultA = AllCombinations<'A' | 'B' | 'C'>
+/** ==================== 提取、构造、递归、数组长度的计数、联合类型的分散 ==================== */
+/** ======================================end ======================================= */
+// 特性1 any 与任何类型交叉 ， 例如 1 & any, 结果是 any
+type IsAny<T> = 'dong' extends ('guang' & T) ? true : false;
+type IsAnyResult = IsAny<any>
+type IsEqualA<A, B> = (A extends B ? true : false) & (B extends A ? true : false)
+
+// TODO: 对这种类型做了特殊处理，得去原理篇了解
+type IsEqualB<A, B> = (<T>() => T extends A ? 1 : 2) extends (<T>() => T extends B ? 1 : 2) ? true : false
+type NotEqual<A, B> = (<T>() => T extends A ? 1 : 2) extends (<T>() => T extends B ? 1 : 2) ? false : true
+type IsSame = IsEqualA<any, boolean>
+type isSameA = IsEqualB<boolean, boolean>
+// NOTE: 这里的 A 是单个类型， B是整个联合类型，所以根据 [B] extends [A]来判断是否是联合类型
+type isUnion<A, B = A> = A extends A ? [B] extends [A] ? false : true : never
+type isUnionResult = isUnion<1 | 2>
+type isUnionResultA = isUnion<1 | 2 | 3 | 4>
+
+type TestNumber<T> = T extends number ? 1 : 2;
+type testNumberResult = TestNumber<any>
+type TestNumberResultA = TestNumber<never>
+type testNumberResultB = TestNumber<number>
+type testNumberResultC = TestNumber<string>
+type IsNever<T> = [T] extends [never] ? true : false;
+type IsNeverResult = IsNever<never>
+
+// NOTE: 利用元组和数组length的特性，来实现判断元组与数组 元组的length 会返回一个数字，数组的length会返回一个number
+type IsTupleDemo = [1, 2, 3] // 元组
+type IsTupleDemoA = number[] // 数组
+type IsTuple<T> =
+  T extends [...params: infer Eles]
+  ? NotEqual<Eles['length'], number>
+  : false;
+type IsTupleResult = IsTuple<IsTupleDemo>
+
+type UnionToIntersection<U> =
+  (U extends U ? (x: U) => unknown : never) extends (x: infer R) => unknown
+  ? R
+  : never;
+
+type UnionToIntersectionResult = UnionToIntersection<{ guang: 1 } | { dong: 2 }>
+
+type GetDemo = {
+  [key: string]: any,
+  sleep(): void
+}
+class MiaoDemo {
+  public name: string;
+  protected age: number;
+  private hobbies: string[];
+
+  constructor() {
+    this.name = 'dong';
+    this.age = 20;
+    this.hobbies = ['sleep', 'eat'];
+  }
+}
+type MiaoName = keyof MiaoDemo;
+/**
+ * ##提取索引中的可选类型
+ * 
+ * @description 可选索引的值为 undefined 和值类型的联合类型。
+ */
+type GetOptional<T extends Record<string, any>> = {
+  [
+    K in keyof T as {} extends Pick<T, K> ? K : never
+  ]: T[K]
+}
+type GetRequired<T extends Record<string, any>> = {
+  [K in keyof T as {} extends Pick<T, K> ? never : K]: T[K]
+}
+type RemoveIndexSignature<T> = {
+  [K in keyof T as K extends `${infer S}` ? S : never]:T[K]
+}
+type ClassPublicProps<T extends Record<string, any>> = {
+  [K in keyof T]: T[K]
+}
+
+type GetOptionalResult = GetOptional<{name: string, age?: number}>
+type GetRequiredResult = GetRequired<{name: string, age?: number}>
+type RemoveIndexSignatureResult = RemoveIndexSignature<GetDemo>
+
+const obj = {
+  a: 1,
+  b: 2
+}
+const objA = {
+  a: 1,
+  b: 2
+} as const
+const arr = [1,2,3];
+const arrA= [1,2,3] as const;
+type objType = typeof obj;
+type ArrType = typeof arr
+type objTypeA = typeof objA;
+type ArrTypeA = typeof arrA;
+
