@@ -350,21 +350,21 @@ type MiaoName = keyof MiaoDemo;
  */
 type GetOptional<T extends Record<string, any>> = {
   [
-    K in keyof T as {} extends Pick<T, K> ? K : never
+  K in keyof T as {} extends Pick<T, K> ? K : never
   ]: T[K]
 }
 type GetRequired<T extends Record<string, any>> = {
   [K in keyof T as {} extends Pick<T, K> ? never : K]: T[K]
 }
 type RemoveIndexSignature<T> = {
-  [K in keyof T as K extends `${infer S}` ? S : never]:T[K]
+  [K in keyof T as K extends `${infer S}` ? S : never]: T[K]
 }
 type ClassPublicProps<T extends Record<string, any>> = {
   [K in keyof T]: T[K]
 }
 
-type GetOptionalResult = GetOptional<{name: string, age?: number}>
-type GetRequiredResult = GetRequired<{name: string, age?: number}>
+type GetOptionalResult = GetOptional<{ name: string, age?: number }>
+type GetRequiredResult = GetRequired<{ name: string, age?: number }>
 type RemoveIndexSignatureResult = RemoveIndexSignature<GetDemo>
 
 const obj = {
@@ -375,10 +375,48 @@ const objA = {
   a: 1,
   b: 2
 } as const
-const arr = [1,2,3];
-const arrA= [1,2,3] as const;
+const arr = [1, 2, 3];
+const arrA = [1, 2, 3] as const;
 type objType = typeof obj;
 type ArrType = typeof arr
 type objTypeA = typeof objA;
 type ArrTypeA = typeof arrA;
 
+type ParamsString = 'a=zhangsan&b=2&c=3&d=4';
+/**
+ * 将 'a=1' 转换为 {a: 1}
+ */
+type PraseParams<T extends string> = T extends `${infer K}=${infer V}` ? { [Key in K]: V } : Record<string, any>;
+/**
+ * 1 1 合并为 1
+ * 1 2 合并为 [1, 2]
+ */
+type MergeValue<P, O> =
+  P extends O
+    ? P
+    : O extends unknown[]
+      ? [P, ...O]
+      : [P, O]
+/**
+ * 将 {a: 1} {b: 2} 转换为 {a: 1, b: 2}
+ */
+type MergeParams<T extends Record<string, any>, V extends Record<string, any>> = {
+  [K in keyof T | keyof V]: 
+  K extends keyof T
+    ? K extends keyof V
+      ? MergeValue<T[K], V[K]>
+      : T[K]
+    : K  extends keyof V
+      ? V[K]
+      :never
+}
+type MergeValueResult = MergeValue<1, 2>
+type PraseParamsResult = PraseParams<'a=1'>
+type MergeParamsResult = MergeParams<{a: 1}, {b: 2}>
+// function
+type ParseQueryString<T extends string> =
+  T extends `${infer I}&${infer Rest}`
+  ? MergeParams<PraseParams<I>, ParseQueryString<Rest>>
+  : PraseParams<T>;
+
+type QueryParamsStringResult = ParseQueryString<ParamsString>;
