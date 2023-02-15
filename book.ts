@@ -1,4 +1,9 @@
+
+function say(msg: {a: 1, b: 2}):{ a: 1, b: 2} { return msg}
+
 type GetParams<Func extends Function> = Func extends (...args: infer Args) => unknown ? Args : never;
+
+
 type ParamsResult = GetParams<(name: string, age: number) => string>
 type GetParamsThis<T> = T extends (this: infer ThisType, ...args: any[]) => any ? ThisType : unknown;
 class Dong {
