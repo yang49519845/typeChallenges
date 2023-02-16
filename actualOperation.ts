@@ -87,8 +87,23 @@ type KebabCaseToCamelCase<T extends string> =
   T extends `${infer F}-${infer R}`
     ? `${F}${KebabCaseToCamelCase<Capitalize<R>>}`
     : T
-
-// CamelCaseToKebabCase
-
-
+/** aaaBbbCcc => aaa-bbb-ccc */
+type CamelCaseToKebabCase<T> =
+  T extends `${infer F}${infer Rest}`
+    ? F extends Lowercase<F>
+      ? `${F}${CamelCaseToKebabCase<Rest>}`
+      : `-${Lowercase<F>}${CamelCaseToKebabCase<Rest>}`
+    : T
+type Demos = Capitalize<'miao'>
 type KebabCaseToCamelCaseResult = KebabCaseToCamelCase<'aaa-bbb-ccc'>
+type CamelCaseToKebabaCaseResult = CamelCaseToKebabCase<KebabCaseToCamelCaseResult>
+
+
+type Chunk<Arr extends unknown[], ItemLen extends number, CurrentItem extends unknown[] = [], Res extends unknown[] = []>
+  = Arr extends [infer F, ...infer Rest]
+    ? CurrentItem['length'] extends ItemLen
+      ? Chunk<Rest, ItemLen, [F], [...Res, CurrentItem]>
+      : Chunk<Rest, ItemLen, [...CurrentItem, F],Res>
+    : [...Res, CurrentItem]
+
+type ChunkResult = Chunk<[1,2,3,4,5], 2>
