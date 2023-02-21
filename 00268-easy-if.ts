@@ -11,16 +11,11 @@ type error = If<null, 'a', 'b'>
 
 
 // ============= Your Code Here =============
-// type If<C extends boolean, T, F> = C extends true 
-//   ? T extends F
-//     ? F
-//     : T
-//   : T extends F
-//     ? T
-//     : F
-
-type If<C extends boolean, T extends unknown, F extends unknown> = 
-  C extends true
+type If<C extends boolean, T, F> = C extends true 
+  ? T extends F
+    ? F
+    : T
+  : T extends F
     ? T
     : F
 

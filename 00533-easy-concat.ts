@@ -13,12 +13,9 @@ type cases = [
 // type Concat<T extends unknown[], U extends unknown[]> = [...T, ...U] 
 
 // ============= Your Code Here =============
-// type Concat<T extends unknown[], U extends unknown[]> = 
-//   T extends [...infer I]
-//     ? U extends [...infer J]
-//       ? [...I, ...J]
-//       : [...I]
-//     : []
-
-type Concat<T extends unknown[], U extends unknown[]> = [...T, ...U]
-
+type Concat<T extends unknown[], U extends unknown[]> = 
+  T extends [...infer I]
+    ? U extends [...infer J]
+      ? [...I, ...J]
+      : [...I]
+    : []

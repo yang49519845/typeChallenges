@@ -34,9 +34,4 @@ type Includes<T extends readonly any[], U> =
       : Includes<Rest, U>
     : false
 
-type Includes<T extends readonly any[], U> = 
-  T extends [infer F, ...infer O]
-    ? Equal<F, U> extends true
-      ? Equal<F, U>
-      : Includes<O, U>
-    : false;
+type Func<X> = <T>() => T extends X ? 1 : 2
