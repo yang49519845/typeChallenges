@@ -12,9 +12,17 @@ type cases = [
 
 
 // ============= Your Code Here =============
-type Result = Replace<'foobarbar', '', 'foo'>
-type Replace<S extends string, From extends string, To extends string> = S extends `${infer Rest}${From}` 
-? `${Rest}` extends S
-  ? S
-  : `${To}${Rest}`
-: S
+type Result = Replace<'foobarbar', 'bar', 'foo'>
+// type Replace<S extends string, From extends string, To extends string> = S extends `${infer Rest}${From}` 
+// ? `${Rest}` extends S
+//   ? S
+//   : `${To}${Rest}`
+// : S
+
+
+type Replace<S extends string, From extends string, To extends string> = 
+  From extends ''
+    ? S
+    : S extends `${infer Left}${From}${infer Right}`
+      ? `${Left}${To}${Right}`
+      : S
