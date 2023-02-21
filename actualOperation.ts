@@ -85,15 +85,15 @@ type CurrFunc<P, R> =
 //  aaa-bbb-ccc   aaaBbbCcc
 type KebabCaseToCamelCase<T extends string> =
   T extends `${infer F}-${infer R}`
-    ? `${F}${KebabCaseToCamelCase<Capitalize<R>>}`
-    : T
+  ? `${F}${KebabCaseToCamelCase<Capitalize<R>>}`
+  : T
 /** aaaBbbCcc => aaa-bbb-ccc */
 type CamelCaseToKebabCase<T> =
   T extends `${infer F}${infer Rest}`
-    ? F extends Lowercase<F>
-      ? `${F}${CamelCaseToKebabCase<Rest>}`
-      : `-${Lowercase<F>}${CamelCaseToKebabCase<Rest>}`
-    : T
+  ? F extends Lowercase<F>
+  ? `${F}${CamelCaseToKebabCase<Rest>}`
+  : `-${Lowercase<F>}${CamelCaseToKebabCase<Rest>}`
+  : T
 type Demos = Capitalize<'miao'>
 type KebabCaseToCamelCaseResult = KebabCaseToCamelCase<'aaa-bbb-ccc'>
 type CamelCaseToKebabaCaseResult = CamelCaseToKebabCase<KebabCaseToCamelCaseResult>
@@ -101,9 +101,61 @@ type CamelCaseToKebabaCaseResult = CamelCaseToKebabCase<KebabCaseToCamelCaseResu
 
 type Chunk<Arr extends unknown[], ItemLen extends number, CurrentItem extends unknown[] = [], Res extends unknown[] = []>
   = Arr extends [infer F, ...infer Rest]
-    ? CurrentItem['length'] extends ItemLen
-      ? Chunk<Rest, ItemLen, [F], [...Res, CurrentItem]>
-      : Chunk<Rest, ItemLen, [...CurrentItem, F],Res>
-    : [...Res, CurrentItem]
+  ? CurrentItem['length'] extends ItemLen
+  ? Chunk<Rest, ItemLen, [F], [...Res, CurrentItem]>
+  : Chunk<Rest, ItemLen, [...CurrentItem, F], Res>
+  : [...Res, CurrentItem]
 
-type ChunkResult = Chunk<[1,2,3,4,5], 2>
+type ChunkResult = Chunk<[1, 2, 3, 4, 5], 2>
+
+type AA = keyof any;
+type BB = keyof undefined;
+type CC = keyof null;
+type ObjDemo = ['m', 'i', 'a', 'o']
+type TupleToNestedObject<T extends unknown[], V> =
+  T extends [infer F, ...infer Rest]
+  ? {
+    [K in F as K extends keyof any ? K : never]:
+    Rest extends unknown[]
+    ? TupleToNestedObject<Rest, V>
+    : V
+  }
+  : V
+
+type TupleToNestedObjectplus<T extends unknown[], V> = T extends [infer F extends PropertyKey, ...infer Rest]
+  ? Record<F, TupleToNestedObject<Rest, V>>
+  : V
+
+type TupleToNestedObjectResult = TupleToNestedObject<ObjDemo, 1>
+type TupleToNestedObjectplusResult = TupleToNestedObjectplus<ObjDemo, 1>
+
+// 高级类型
+interface Dong {
+  name: string
+  age: number
+  address: string
+}
+
+interface Dong2 {
+  name?: string
+  age?: number
+  address: string 
+}
+
+type PartialObjectPropByKeys<
+    Obj extends Record<string, any>,
+    Key extends keyof any
+> = Partial<Pick<Obj,Extract<keyof Obj, Key>>> & Omit<Obj,Key>;
+
+type PartialObjectPropByKeysResult = CopyA<PartialObjectPropByKeys<Dong, 'age' | 'address'>>
+type CopyA<T extends Record<string, any>> = {
+  [K in keyof T] : T[K]
+}
+
+type DongKey = keyof Dong;
+type ExtractResult = Extract<DongKey, 'name' | 'age'>
+type PickResult = Pick<Dong, ExtractResult>
+type PartialResult = Partial<PickResult>
+
+const a:PartialObjectPropByKeysResult = {
+}
