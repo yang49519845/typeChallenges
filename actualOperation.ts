@@ -180,5 +180,109 @@ type ExtractResult = Extract<DongKey, 'name' | 'age'>
 type PickResult = Pick<Dong, ExtractResult>
 type PartialResult = Partial<PickResult>
 
-const a: PartialObjectPropByKeysResult = {
+type UnionToIntersection<U> =
+  (U extends U ? (x: U) => unknown : never) extends (x: infer R) => unknown
+  ? R
+  : never
+
+type UnionToFuncIntersection<T> = UnionToIntersection<T extends any ? () => T : never>
+type UnionToTuple<T> = UnionToIntersection<T extends any ? () => T : never> extends () => infer R
+  ? [...UnionToTuple<Exclude<T, R>>, R]
+  : []
+type UnionToIntersectionResult = UnionToIntersection<'a'>
+type UnionToFuncIntersectionResultA = UnionToFuncIntersection<'miao' | 'shi' | 'yi'>
+type UnionToFuncIntersectionResult = UnionToFuncIntersection<'miao' | 'shi' | 'yi'>
+type UnionToTupleResult = UnionToTuple<'a' | 'b' | 'c'>
+// type UnionToTuple<T> = T export
+type RemoveFirstDelimiter<
+  T extends string
+> = T extends `${infer _}${infer Rest}` ? Rest : T
+
+
+type JoinType<
+  I extends any[],
+  T extends string,
+  Result extends string = ''
+> = I extends [infer F, ...infer Rest]
+  ? JoinType<Rest, T, `${Result}${T}${F & string}`>
+  : RemoveFirstDelimiter<Result>
+
+function join<
+  T extends string
+>(a: T):
+  <Items extends string[]>
+    (...parts: Items) => JoinType<Items, T>
+function join(a: string) {
+  return function params(b: string, c: string, d: string) {
+    return `${b}${a}${c}${a}${d}`
+  }
 }
+
+const a = join('-')('miao', 'shi', 'yi')
+
+type CamelizeArr<Arr> = Arr extends [infer F, ...infer Rest]
+  ? [DeepCamelize<F extends Record<string, any> ? F : never>, ...CamelizeArr<Rest>]
+  : []
+type DeepCamelize<Obj extends Record<string, any>> =
+  Obj extends unknown[]
+  ? CamelizeArr<Obj>
+  : {
+    [
+    Key in keyof Obj
+    as Key extends `${infer F}_${infer Rest}`
+    ? `${F}${Capitalize<Rest>}`
+    : Key
+
+    ]: DeepCamelize<Obj[Key]>
+  }
+
+type DeepCamelizeResult = DeepCamelize<{
+  aaa_bbb: string,
+  bbb_ccc: [
+    {
+      ccc_ddd: string,
+      eee_fff: {
+        fff_ggg: string
+      }
+    }
+  ]
+}>
+
+type AllKeyPath<Obj extends Record<string, any>> = {
+  [K in keyof Obj]: 
+    K extends string
+      ? Obj[K] extends Record<string, any>
+        ? K | `${K}.${AllKeyPath<Obj[K]>}`
+        : K
+      : never
+}[keyof Obj]
+type Obj = {
+  a: {
+      b: {
+          b1: string
+          b2: string
+      }
+      c: {
+          c1: string;
+          c2: string;
+      }
+  },
+}
+
+type AllKeyPathResult = AllKeyPath<Obj>
+
+type Defaulting<A, B> =
+ & Pick<A, Exclude<keyof A, keyof B>>
+ & Partial<Pick<A, Extract<keyof A, keyof B>>>
+ & Partial<Pick<B, Exclude<keyof B, keyof A>>>
+
+ type Copy<Obj extends Record<string, any>> = {
+  [K in keyof Obj]: Obj[K]
+ }
+ type DefaultingResult = Copy<Defaulting<{
+  aaa: 1,
+  bbb: 2
+ }, {
+  bbb: 2,
+  ccc: 3
+ }>>
