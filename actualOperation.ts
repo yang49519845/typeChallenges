@@ -1,3 +1,5 @@
+import { Flatten } from "./00459-medium-flatten";
+
 function parseQueryString<S extends string>(str: S): ParseQueryString<S>
 function parseQueryString(str: string) {
   if (!str || !str.length) {
@@ -20,6 +22,27 @@ function parseQueryString(str: string) {
   return queryObj;
 }
 
+function flat<A extends readonly unknown[]>(arr: A): Flatten<A>
+function flat(arr: readonly unknown[]) {
+  if (arr.length === 0) return []
+  const [u, ...rest] = arr;
+  if (Array.isArray(u)) {
+    return [...flat(u), ...flat(rest)]
+  } else {
+    return [u, ...flat(rest)]
+  }
+}
+
+const arr = [1, 2, 3, 4, 5, [6, [7, [8, [9]]]]] as const;
+
+
+
+
+
+
+
+
+const c = flat(arr)
 // a=1&b=2&c=3  => {a: 1 : b: 2, c: 3}
 const params = parseQueryString('a=1&b=2&c=3')
 
@@ -139,17 +162,17 @@ interface Dong {
 interface Dong2 {
   name?: string
   age?: number
-  address: string 
+  address: string
 }
 
 type PartialObjectPropByKeys<
-    Obj extends Record<string, any>,
-    Key extends keyof any
-> = Partial<Pick<Obj,Extract<keyof Obj, Key>>> & Omit<Obj,Key>;
+  Obj extends Record<string, any>,
+  Key extends keyof any
+> = Partial<Pick<Obj, Extract<keyof Obj, Key>>> & Omit<Obj, Key>;
 
 type PartialObjectPropByKeysResult = CopyA<PartialObjectPropByKeys<Dong, 'age' | 'address'>>
 type CopyA<T extends Record<string, any>> = {
-  [K in keyof T] : T[K]
+  [K in keyof T]: T[K]
 }
 
 type DongKey = keyof Dong;
@@ -157,5 +180,5 @@ type ExtractResult = Extract<DongKey, 'name' | 'age'>
 type PickResult = Pick<Dong, ExtractResult>
 type PartialResult = Partial<PickResult>
 
-const a:PartialObjectPropByKeysResult = {
+const a: PartialObjectPropByKeysResult = {
 }
