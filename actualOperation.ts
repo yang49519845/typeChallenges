@@ -34,8 +34,7 @@ function flat(arr: readonly unknown[]) {
 }
 
 const arr = [1, 2, 3, 4, 5, [6, [7, [8, [9]]]]] as const;
-
-
+const brr = arr.flat(Infinity)
 
 
 
