@@ -15,11 +15,10 @@ type cases = [
 
 
 // ============= Your Code Here =============
-type KebabCase<S extends string> = 
-  S extends `${infer F}${infer Rest}`
-    ? Rest extends Uncapitalize<Rest>
-      ? `${Lowercase<F>}${KebabCase<Rest>}`
-      : `${Lowercase<F>}-${KebabCase<Rest>}`
-    : S
+type KebabCase<T extends string> = T extends `${infer F}${infer Rest}`
+  ? Rest extends Uncapitalize<Rest>
+    ? `${Lowercase<F>}${KebabCase<Rest>}`
+    : `${Lowercase<F>}-${KebabCase<Rest>}`
+  : T
 
-type Result = Uncapitalize<'foo-bar-baz'>
+type Result = KebabCase<`FooBarBaz`>
