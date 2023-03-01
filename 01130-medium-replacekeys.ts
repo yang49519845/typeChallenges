@@ -1,0 +1,89 @@
+// ============= Test Cases =============
+import type { Equal, Expect } from './test-utils'
+
+type NodeA = {
+  type: 'A'
+  name: string
+  flag: number
+}
+
+type NodeB = {
+  type: 'B'
+  id: number
+  flag: number
+}
+
+type NodeC = {
+  type: 'C'
+  name: string
+  flag: number
+}
+
+type ReplacedNodeA = {
+  type: 'A'
+  name: number
+  flag: string
+}
+
+type ReplacedNodeB = {
+  type: 'B'
+  id: number
+  flag: string
+}
+
+type ReplacedNodeC = {
+  type: 'C'
+  name: number
+  flag: string
+}
+
+type NoNameNodeA = {
+  type: 'A'
+  flag: number
+  name: never
+}
+
+type NoNameNodeC = {
+  type: 'C'
+  flag: number
+  name: never
+}
+
+type Nodes = NodeA | NodeB | NodeC
+type ReplacedNodes = ReplacedNodeA | ReplacedNodeB | ReplacedNodeC
+type NodesNoName = NoNameNodeA | NoNameNodeC | NodeB
+
+type cases = [
+  Expect<Equal<ReplaceKeys<Nodes, 'name' | 'flag', { name: number; flag: string }>, ReplacedNodes>>,
+  Expect<Equal<ReplaceKeys<Nodes, 'name', { aa: number }>, NodesNoName>>,
+]
+
+
+// ============= Your Code Here =============
+// type ReplaceKeys<U, T, Y> = {
+//   [K in keyof U]:
+//     K extends T
+//       ? (K extends keyof Y ? Y[K] : never)
+//       : U[K]
+// }
+// type Merge<T> = {
+//   [K in keyof T]: T[K]
+// };
+// type ReplaceKeys<U, T, Y> = 
+//   U extends unknown
+//   ? Merge<
+//       Pick<U, Exclude<keyof U, T>> &
+//       Pick<Y, T & keyof U & keyof Y> &
+//       Record<Exclude<T & keyof U, keyof Y>, never>
+//     >
+//   : never;
+
+
+type ReplaceKeys<U, T, Y> = {
+  [K in keyof U]:
+    K extends T
+      ? (K extends keyof Y ? Y[K] : never)
+      : U[K]
+}
+
+// TODO:  pick record exclude 
