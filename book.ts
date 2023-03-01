@@ -1,5 +1,5 @@
 
-function say(msg: {a: 1, b: 2}):{ a: 1, b: 2} { return msg}
+function say(msg: { a: 1, b: 2 }): { a: 1, b: 2 } { return msg }
 
 type GetParams<Func extends Function> = Func extends (...args: infer Args) => unknown ? Args : never;
 
@@ -398,26 +398,26 @@ type PraseParams<T extends string> = T extends `${infer K}=${infer V}` ? { [Key 
  */
 type MergeValue<P, O> =
   P extends O
-    ? P
-    : O extends unknown[]
-      ? [P, ...O]
-      : [P, O]
+  ? P
+  : O extends unknown[]
+  ? [P, ...O]
+  : [P, O]
 /**
  * 将 {a: 1} {b: 2} 转换为 {a: 1, b: 2}
  */
 type MergeParams<T extends Record<string, any>, V extends Record<string, any>> = {
-  [K in keyof T | keyof V]: 
+  [K in keyof T | keyof V]:
   K extends keyof T
-    ? K extends keyof V
-      ? MergeValue<T[K], V[K]>
-      : T[K]
-    : K  extends keyof V
-      ? V[K]
-      :never
+  ? K extends keyof V
+  ? MergeValue<T[K], V[K]>
+  : T[K]
+  : K extends keyof V
+  ? V[K]
+  : never
 }
 type MergeValueResult = MergeValue<1, 2>
 type PraseParamsResult = PraseParams<'a=1'>
-type MergeParamsResult = MergeParams<{a: 1}, {b: 2}>
+type MergeParamsResult = MergeParams<{ a: 1 }, { b: 2 }>
 // function
 type ParseQueryString<T extends string> =
   T extends `${infer I}&${infer Rest}`
@@ -425,3 +425,48 @@ type ParseQueryString<T extends string> =
   : PraseParams<T>;
 
 type QueryParamsStringResult = ParseQueryString<ParamsString>;
+
+//////////////// 16新语法 infer extends 是如何简化类型编程的 ///////////////
+type TestLast<Arr extends string[]> =
+  // Arr extends [infer First, ...infer Rest, infer Last]
+  // ? `提取出来的 ${Last}` // 不能将类型“Last”分配给类型“string | number | bigint | boolean | null | undefined”。ts(2322)
+  // : never
+  Arr extends [infer First, ...infer Rest, infer Last extends string]
+  ? `提取出来的 ${Last}`
+  : never
+
+enum Code {
+  a = 111,
+  b = 222,
+  c = "abc"
+}
+
+type CodeRes = `${Code}`
+
+type StrToNum<T> = T extends `${infer Num extends number}` ? Num : T
+type StrToNumResult = StrToNum<`${Code}`>
+
+//////////////////// 原理篇：逆变、协变、双向协变、不变 ////////////////////
+interface Person {
+  name: string;
+  age: number;
+} 
+
+interface Guang {
+  name: string;
+  age: number;
+  hobbies: string[]
+}
+
+let person: Person = {
+  name: '',
+  age: 1
+}
+
+let guang: Guang = {
+  name: '',
+  age: 1,
+  hobbies: ['haha']
+}
+
+person = guang
