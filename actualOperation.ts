@@ -34,12 +34,27 @@ function flat(arr: readonly unknown[]) {
 }
 
 const arr = [1, 2, 3, 4, 5, [6, [7, [8, [9]]]]] as const;
+const arr1 = [1, 2, 3, 4, 5, 6,7,8,9,0] as const;
 const brr = arr.flat(Infinity)
 
+function chunk<T extends readonly unknown[], I extends number>(arr: T, size: I): Chunk<[...T], I>
+function chunk<T>(arr: T[], size: number = 1, cache: T[][] = []): T[][] {
+  const tmp = arr.concat([]);
+  const len = tmp === null ? 0 : tmp.length;
+  if (!len || size <= 0) {
+    return cache
+  }
 
+  while (tmp.length) {
+    cache.push(tmp.slice(0, size))
+  }
 
+  return cache
+}
 
+const aa = chunk(arr1, 3)
 
+/*  */
 
 const c = flat(arr)
 // a=1&b=2&c=3  => {a: 1 : b: 2, c: 3}

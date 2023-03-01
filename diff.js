@@ -68,42 +68,5 @@ function diff(oldObj, newObj) {
   return patch;
 }
 
-// function diff(oldObj, newObj, keys = new Set([...Object.keys(oldObj), ...Object.keys(newObj)])) {
-//   if (keys.size === 0) {
-//     return {};
-//   }
-
-//   const [key, ...restKeys] = keys;
-
-//   const oldValue = oldObj[key];
-//   const newValue = newObj[key];
-
-//   if (oldValue !== newValue && typeof oldValue !== 'object' && typeof newValue !== 'object') {
-//     return {
-//       [key]: newValue,
-//       ...diff(oldObj, newObj, restKeys)
-//     };
-//   } else if (typeof oldValue === 'object' && typeof newValue === 'object') {
-//     const subPatch = diff(oldValue, newValue);
-
-//     if (Object.keys(subPatch).length > 0) {
-//       return {
-//         [key]: subPatch,
-//         ...diff(oldObj, newObj, restKeys)
-//       };
-//     } else {
-//       return diff(oldObj, newObj, restKeys);
-//     }
-//   } else if (!newObj.hasOwnProperty(key)) {
-//     return {
-//       [key]: null,
-//       ...diff(oldObj, newObj, restKeys)
-//     };
-//   } else {
-//     return diff(oldObj, newObj, restKeys);
-//   }
-// }
-
-
 diff(oldObj, newObj)
 // diff(baz, foo)
