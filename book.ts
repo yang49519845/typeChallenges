@@ -470,3 +470,25 @@ let guang: Guang = {
 }
 
 person = guang
+// guang = person
+
+let printHobbies: (guang: Guang) => void;
+let printName:(person: Person) => void;
+
+printHobbies = (guang) => {
+  console.log(guang)
+}
+printName = (person) => {
+  console.log(person)
+}
+
+
+printHobbies = printName
+
+// printName = printHobbies
+
+type Func = (a: string) => void;
+
+// hello 不是string的字类型
+// const func:Func = (a: 'hello') => undefined;
+
