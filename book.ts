@@ -450,7 +450,7 @@ type StrToNumResult = StrToNum<`${Code}`>
 interface Person {
   name: string;
   age: number;
-} 
+}
 
 interface Guang {
   name: string;
@@ -473,7 +473,7 @@ person = guang
 // guang = person
 
 let printHobbies: (guang: Guang) => void;
-let printName:(person: Person) => void;
+let printName: (person: Person) => void;
 
 printHobbies = (guang) => {
   console.log(guang)
@@ -492,3 +492,34 @@ type Func = (a: string) => void;
 // hello 不是string的字类型
 // const func:Func = (a: 'hello') => undefined;
 
+type isEqual<A, B> = (<T>() => T extends A ? 1 : 2) extends (<T>() => T extends B ? 1 : 2) ? true : false
+
+type Resss = isEqual<1, 2>
+type Ressss = isEqual<1, 1>
+
+type Zip<Target extends unknown[], Source extends unknown[]> =
+  Target['length'] extends 0
+  ? []
+  : Source extends 0
+  ? []
+  : Target extends [infer One, ...infer Rest]
+  ? Source extends [infer Other, ...infer RestOther]
+  ? [[One, Other], ...Zip<Rest, RestOther>]
+  : []
+  : []
+
+type RRR = Zip<[1, 2, 3], [4, 5, 6]>
+function zip(target: unknown[], source: unknown[]): unknown[]
+function zip<Target extends readonly unknown[], Source extends readonly unknown[]>(target: Target, source: Source): Zip<[...Target], [...Source]>
+function zip(target: unknown[], source: unknown[]) {
+  if (target.length === 0 || source.length === 0) return []
+
+  const [targetFirst, ...targetRest] = target;
+  const [sourceFirst, ...sourceRest] = source;
+
+  return [[targetFirst, sourceFirst], ...zip(targetRest, sourceRest)]
+}
+const arrr = [1, 2, 3]
+const arrr1 = [4, 5, 6]
+const a = zip(arrr, arrr1)
+const b = zip([1, 2, 3] as const, [4, 5, 6] as const)
