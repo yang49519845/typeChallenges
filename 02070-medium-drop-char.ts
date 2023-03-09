@@ -16,10 +16,10 @@ type cases = [
 
 // ============= Your Code Here =============
 type DropChar<S extends string, C extends string> =
-  S extends `${C}${infer Last}`
-    ? DropChar<Last, C>
+  S extends `${C}${infer Rest}`
+    ? `${DropChar<Rest, C>}`
     : S extends `${infer A}${infer B}`
-      ? `${A}${DropChar<B, C>}`
+      ?  `${A}${DropChar<B, C>}`
       : ''
 
 
