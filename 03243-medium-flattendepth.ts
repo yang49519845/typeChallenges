@@ -15,11 +15,11 @@ type cases = [
 
 // ============= Your Code Here =============
 type Extends<T, U> = T extends U ? true : false;
-
-type FlattenDepth<T, D extends number = 1, A extends unknown[] = []> = T extends readonly [infer F, ...infer Rest]
-  ? [Extends<F, unknown[]>, Extends<A['length'], D>] extends [true, false]
-    ? [...FlattenDepth<F, D, [...A, unknown]>, ...FlattenDepth<Rest, D, A>]
-    : [F, ...FlattenDepth<Rest, D, A>]
-  : []
+type FlattenDepth<T, D extends number = 1, A extends unknown[] = []> = 
+  T extends readonly [infer F, ...infer Rest]
+    ? [Extends<F, unknown[]>, Extends<A['length'], D>] extends [true, false]
+      ? [...FlattenDepth<F, D, [...A, unknown]>, ...FlattenDepth<Rest, D, A>]
+      : [F, ...FlattenDepth<Rest, D, A>]
+    : []
 
 type Result = FlattenDepth<[1, [2, [3, [4, [5]]]]], 2>
