@@ -523,3 +523,8 @@ const arrr = [1, 2, 3]
 const arrr1 = [4, 5, 6]
 const a = zip(arrr, arrr1)
 const b = zip([1, 2, 3] as const, [4, 5, 6] as const)
+
+type Query = typeof QueryKey[keyof typeof QueryKey]
+const QueryKey = {
+  getImage: "getImage"
+}
