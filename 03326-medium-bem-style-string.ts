@@ -10,20 +10,11 @@ type cases = [
 
 // ============= Your Code Here =============
 
-type GenerateBE<B extends string, E extends string[]> = 
+type GenerateLine<B extends string, E extends string[], Line extends string = '__'> = 
   E extends [infer EH, ...infer ET]
     ? ET extends string[]
       ? EH extends string
-        ? `${B}__${EH}` | GenerateBE<B, ET>
-        : never
-      : never
-    : never
-
-type GenerateBM<B extends string, M extends string[]> =
-  M extends [infer MH, ...infer MT]
-    ? MT extends string[]
-      ? MH extends string
-        ? `${B}--${MH}` | GenerateBM<B, MT>
+        ? `${B}${Line}${EH}` | GenerateLine<B, ET, Line>
         : never
       : never
     : never
@@ -33,8 +24,8 @@ type BEM<B extends string, E extends string[], M extends string[]> =
   M['length'] extends 0
     ? E['length'] extends 0
       ? B
-      : GenerateBE<B, E>
+      : GenerateLine<B, E, '__'>
     : E['length'] extends 0
-      ? GenerateBM<B, M>
-      : GenerateBM<GenerateBE<B, E>, M>
+      ? GenerateLine<B, M, '--'>
+      : GenerateLine<GenerateLine<B, E>, M, '--'>
 
