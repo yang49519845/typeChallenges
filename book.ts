@@ -528,3 +528,10 @@ type Query = typeof QueryKey[keyof typeof QueryKey]
 const QueryKey = {
   getImage: "getImage"
 }
+
+
+type InclduesType<T extends unknown[], D> = T extends [infer Item, ...infer Rest]
+  ? Item extends D
+    ? true
+    : InclduesType<Rest, D>
+  : false
